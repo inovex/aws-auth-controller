@@ -28,17 +28,21 @@ type MapUserSpec struct {
 	// INSERT ADDITIONAL SPEC FIELDS - desired state of cluster
 	// Important: Run "make" to regenerate code after modifying this file
 
-	// Foo is an example field of MapUser. Edit mapuser_types.go to remove/update
-	Foo string `json:"foo,omitempty"`
+	UserArn  string   `json:"userArn"`
+	UserName string   `json:"userName"`
+	Groups   []string `json:"groups"`
 }
 
 // MapUserStatus defines the observed state of MapUser
 type MapUserStatus struct {
 	// INSERT ADDITIONAL STATUS FIELD - define observed state of cluster
 	// Important: Run "make" to regenerate code after modifying this file
+
+	IsMapped bool `json:"isMapped"`
 }
 
 //+kubebuilder:object:root=true
+//+kubebuilder:resource:scope=Cluster
 //+kubebuilder:subresource:status
 
 // MapUser is the Schema for the mapusers API
@@ -51,6 +55,7 @@ type MapUser struct {
 }
 
 //+kubebuilder:object:root=true
+//+kubebuilder:resource:scope=Cluster
 
 // MapUserList contains a list of MapUser
 type MapUserList struct {
