@@ -5,7 +5,7 @@ metadata:
   name: mapuser-viewer-role
 rules:
 - apiGroups:
-  - aws-auth.aws-auth.inovex.de
+  - aws-auth.inovex.de
   resources:
   - mapusers
   verbs:
@@ -13,7 +13,7 @@ rules:
   - list
   - watch
 - apiGroups:
-  - aws-auth.aws-auth.inovex.de
+  - aws-auth.inovex.de
   resources:
   - mapusers/status
   verbs:

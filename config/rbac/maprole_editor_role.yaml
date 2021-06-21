@@ -5,7 +5,7 @@ metadata:
   name: maprole-editor-role
 rules:
 - apiGroups:
-  - aws-auth.aws-auth.inovex.de
+  - aws-auth.inovex.de
   resources:
   - maproles
   verbs:
@@ -17,7 +17,7 @@ rules:
   - update
   - watch
 - apiGroups:
-  - aws-auth.aws-auth.inovex.de
+  - aws-auth.inovex.de
   resources:
   - maproles/status
   verbs:

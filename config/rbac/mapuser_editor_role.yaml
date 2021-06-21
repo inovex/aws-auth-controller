@@ -5,7 +5,7 @@ metadata:
   name: mapuser-editor-role
 rules:
 - apiGroups:
-  - aws-auth.aws-auth.inovex.de
+  - aws-auth.inovex.de
   resources:
   - mapusers
   verbs:
@@ -17,7 +17,7 @@ rules:
   - update
   - watch
 - apiGroups:
-  - aws-auth.aws-auth.inovex.de
+  - aws-auth.inovex.de
   resources:
   - mapusers/status
   verbs:

@@ -33,9 +33,9 @@ type MapRoleReconciler struct {
 	Scheme *runtime.Scheme
 }
 
-//+kubebuilder:rbac:groups=aws-auth.aws-auth.inovex.de,resources=maproles,verbs=get;list;watch;create;update;patch;delete
-//+kubebuilder:rbac:groups=aws-auth.aws-auth.inovex.de,resources=maproles/status,verbs=get;update;patch
-//+kubebuilder:rbac:groups=aws-auth.aws-auth.inovex.de,resources=maproles/finalizers,verbs=update
+//+kubebuilder:rbac:groups=aws-auth.inovex.de,resources=maproles,verbs=get;list;watch;create;update;patch;delete
+//+kubebuilder:rbac:groups=aws-auth.inovex.de,resources=maproles/status,verbs=get;update;patch
+//+kubebuilder:rbac:groups=aws-auth.inovex.de,resources=maproles/finalizers,verbs=update
 
 // Reconcile is part of the main kubernetes reconciliation loop which aims to
 // move the current state of the cluster closer to the desired state.

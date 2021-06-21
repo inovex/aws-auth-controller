@@ -1,4 +1,4 @@
-apiVersion: aws-auth.aws-auth.inovex.de/v1alpha1
+apiVersion: aws-auth.inovex.de/v1alpha1
 kind: MapUser
 metadata:
   name: mapuser-sample
