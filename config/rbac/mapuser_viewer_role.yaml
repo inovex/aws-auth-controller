@@ -1,0 +1,20 @@
+# permissions for end users to view mapusers.
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: mapuser-viewer-role
+rules:
+- apiGroups:
+  - aws-auth.aws-auth.inovex.de
+  resources:
+  - mapusers
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+  - aws-auth.aws-auth.inovex.de
+  resources:
+  - mapusers/status
+  verbs:
+  - get

@@ -1,0 +1,20 @@
+# permissions for end users to view maproles.
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: maprole-viewer-role
+rules:
+- apiGroups:
+  - aws-auth.aws-auth.inovex.de
+  resources:
+  - maproles
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+  - aws-auth.aws-auth.inovex.de
+  resources:
+  - maproles/status
+  verbs:
+  - get
