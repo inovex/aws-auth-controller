@@ -18,7 +18,9 @@ package controllers
 
 import (
 	"context"
+	"fmt"
 
+	corev1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
@@ -49,7 +51,16 @@ type MapRoleReconciler struct {
 func (r *MapRoleReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.Result, error) {
 	_ = log.FromContext(ctx)
 
-	// your logic here
+	authCM := &corev1.ConfigMap{}
+	err := r.Get(ctx, client.ObjectKey{
+		Namespace: "kube-system",
+		Name:      "aws-auth",
+	}, authCM)
+	if err != nil {
+		return ctrl.Result{}, err
+	}
+
+	fmt.Printf("%v\n", authCM.Data)
 
 	return ctrl.Result{}, nil
 }
