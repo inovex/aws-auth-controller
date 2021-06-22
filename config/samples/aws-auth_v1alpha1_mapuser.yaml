@@ -1,7 +1,0 @@
-apiVersion: aws-auth.inovex.de/v1alpha1
-kind: MapUser
-metadata:
-  name: mapuser-sample
-spec:
-  # Add fields here
-  foo: bar

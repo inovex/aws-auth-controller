@@ -1,0 +1,10 @@
+apiVersion: aws-auth.inovex.de/v1alpha1
+kind: IamRoleMap
+metadata:
+  name: iamrolemap-sample
+spec:
+  rolearn: arn:aws:iam::111122223333:role/eksctl-my-cluster-nodegroup-standard-wo-NodeInstanceRole-1WP3NUE3O6UCF
+  username: system:node:{{EC2PrivateDNSName}}
+  groups:
+    - system:bootstrappers
+    - system:nodes

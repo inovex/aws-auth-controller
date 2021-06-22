@@ -18,7 +18,10 @@ package controllers
 
 import (
 	"context"
+	"fmt"
+	"strconv"
 
+	corev1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
@@ -27,36 +30,59 @@ import (
 	awsauthv1alpha1 "github.com/inovex/aws-auth-controller/api/v1alpha1"
 )
 
-// MapUserReconciler reconciles a MapUser object
-type MapUserReconciler struct {
+// IamRoleMapReconciler reconciles a IamRoleMap object
+type IamRoleMapReconciler struct {
 	client.Client
 	Scheme *runtime.Scheme
 }
 
-//+kubebuilder:rbac:groups=aws-auth.inovex.de,resources=mapusers,verbs=get;list;watch;create;update;patch;delete
-//+kubebuilder:rbac:groups=aws-auth.inovex.de,resources=mapusers/status,verbs=get;update;patch
-//+kubebuilder:rbac:groups=aws-auth.inovex.de,resources=mapusers/finalizers,verbs=update
+//+kubebuilder:rbac:groups=aws-auth.inovex.de,resources=maproles,verbs=get;list;watch;create;update;patch;delete
+//+kubebuilder:rbac:groups=aws-auth.inovex.de,resources=maproles/status,verbs=get;update;patch
+//+kubebuilder:rbac:groups=aws-auth.inovex.de,resources=maproles/finalizers,verbs=update
 
 // Reconcile is part of the main kubernetes reconciliation loop which aims to
 // move the current state of the cluster closer to the desired state.
 // TODO(user): Modify the Reconcile function to compare the state specified by
-// the MapUser object against the actual cluster state, and then
+// the IamRoleMap object against the actual cluster state, and then
 // perform operations to make the cluster state reflect the state specified by
 // the user.
 //
 // For more details, check Reconcile and its Result here:
 // - https://pkg.go.dev/sigs.k8s.io/controller-runtime@v0.8.3/pkg/reconcile
-func (r *MapUserReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.Result, error) {
+func (r *IamRoleMapReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.Result, error) {
 	_ = log.FromContext(ctx)
 
-	// your logic here
+	authCM := &corev1.ConfigMap{}
+	err := r.Get(ctx, client.ObjectKey{
+		Namespace: "kube-system",
+		Name:      "aws-auth",
+	}, authCM)
+	if err != nil {
+		return ctrl.Result{}, err
+	}
+	version, ok := authCM.ObjectMeta.Annotations["aws-auth.inovex.de/authversion"]
+	if !ok {
+		version = "0"
+	}
+	intVersion, _ := strconv.Atoi(version)
+
+	fmt.Printf("Raw Data: %v\n", authCM.Data)
+
+	intVersion++
+	authCM.Data["mapRoles"] = fmt.Sprintf("data version %d", intVersion)
+	authCM.ObjectMeta.Annotations["aws-auth.inovex.de/authversion"] = fmt.Sprintf("%d", intVersion)
+
+	err = r.Update(ctx, authCM)
+	if err != nil {
+		return ctrl.Result{}, err
+	}
 
 	return ctrl.Result{}, nil
 }
 
 // SetupWithManager sets up the controller with the Manager.
-func (r *MapUserReconciler) SetupWithManager(mgr ctrl.Manager) error {
+func (r *IamRoleMapReconciler) SetupWithManager(mgr ctrl.Manager) error {
 	return ctrl.NewControllerManagedBy(mgr).
-		For(&awsauthv1alpha1.MapUser{}).
+		For(&awsauthv1alpha1.IamRoleMap{}).
 		Complete(r)
 }

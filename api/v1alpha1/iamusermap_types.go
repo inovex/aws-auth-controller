@@ -23,8 +23,8 @@ import (
 // EDIT THIS FILE!  THIS IS SCAFFOLDING FOR YOU TO OWN!
 // NOTE: json tags are required.  Any new fields you add must have json tags for the fields to be serialized.
 
-// MapUserSpec defines the desired state of MapUser
-type MapUserSpec struct {
+// IamUserMapSpec defines the desired state of IamUserMap
+type IamUserMapSpec struct {
 	// INSERT ADDITIONAL SPEC FIELDS - desired state of cluster
 	// Important: Run "make" to regenerate code after modifying this file
 
@@ -33,8 +33,8 @@ type MapUserSpec struct {
 	Groups   []string `json:"groups"`
 }
 
-// MapUserStatus defines the observed state of MapUser
-type MapUserStatus struct {
+// IamUserMapStatus defines the observed state of IamUserMap
+type IamUserMapStatus struct {
 	// INSERT ADDITIONAL STATUS FIELD - define observed state of cluster
 	// Important: Run "make" to regenerate code after modifying this file
 
@@ -45,25 +45,25 @@ type MapUserStatus struct {
 //+kubebuilder:resource:scope=Cluster
 //+kubebuilder:subresource:status
 
-// MapUser is the Schema for the mapusers API
-type MapUser struct {
+// IamUserMap is the Schema for the mapusers API
+type IamUserMap struct {
 	metav1.TypeMeta   `json:",inline"`
 	metav1.ObjectMeta `json:"metadata,omitempty"`
 
-	Spec   MapUserSpec   `json:"spec,omitempty"`
-	Status MapUserStatus `json:"status,omitempty"`
+	Spec   IamUserMapSpec   `json:"spec,omitempty"`
+	Status IamUserMapStatus `json:"status,omitempty"`
 }
 
 //+kubebuilder:object:root=true
 //+kubebuilder:resource:scope=Cluster
 
-// MapUserList contains a list of MapUser
-type MapUserList struct {
+// IamUserMapList contains a list of IamUserMap
+type IamUserMapList struct {
 	metav1.TypeMeta `json:",inline"`
 	metav1.ListMeta `json:"metadata,omitempty"`
-	Items           []MapUser `json:"items"`
+	Items           []IamUserMap `json:"items"`
 }
 
 func init() {
-	SchemeBuilder.Register(&MapUser{}, &MapUserList{})
+	SchemeBuilder.Register(&IamUserMap{}, &IamUserMapList{})
 }

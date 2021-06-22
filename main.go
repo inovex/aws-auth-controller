@@ -78,18 +78,18 @@ func main() {
 		os.Exit(1)
 	}
 
-	if err = (&controllers.MapRoleReconciler{
+	if err = (&controllers.IamRoleMapReconciler{
 		Client: mgr.GetClient(),
 		Scheme: mgr.GetScheme(),
 	}).SetupWithManager(mgr); err != nil {
-		setupLog.Error(err, "unable to create controller", "controller", "MapRole")
+		setupLog.Error(err, "unable to create controller", "controller", "IamRoleMap")
 		os.Exit(1)
 	}
-	if err = (&controllers.MapUserReconciler{
+	if err = (&controllers.IamUserMapReconciler{
 		Client: mgr.GetClient(),
 		Scheme: mgr.GetScheme(),
 	}).SetupWithManager(mgr); err != nil {
-		setupLog.Error(err, "unable to create controller", "controller", "MapUser")
+		setupLog.Error(err, "unable to create controller", "controller", "IamUserMap")
 		os.Exit(1)
 	}
 	//+kubebuilder:scaffold:builder

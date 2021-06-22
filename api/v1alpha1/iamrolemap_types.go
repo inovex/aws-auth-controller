@@ -23,8 +23,8 @@ import (
 // EDIT THIS FILE!  THIS IS SCAFFOLDING FOR YOU TO OWN!
 // NOTE: json tags are required.  Any new fields you add must have json tags for the fields to be serialized.
 
-// MapRoleSpec defines the desired state of MapRole
-type MapRoleSpec struct {
+// IamRoleMapSpec defines the desired state of IamRoleMap
+type IamRoleMapSpec struct {
 	// INSERT ADDITIONAL SPEC FIELDS - desired state of cluster
 	// Important: Run "make" to regenerate code after modifying this file
 
@@ -33,8 +33,8 @@ type MapRoleSpec struct {
 	Groups   []string `json:"groups"`
 }
 
-// MapRoleStatus defines the observed state of MapRole
-type MapRoleStatus struct {
+// IamRoleMapStatus defines the observed state of IamRoleMap
+type IamRoleMapStatus struct {
 	// INSERT ADDITIONAL STATUS FIELD - define observed state of cluster
 	// Important: Run "make" to regenerate code after modifying this file
 
@@ -45,25 +45,25 @@ type MapRoleStatus struct {
 //+kubebuilder:resource:scope=Cluster
 //+kubebuilder:subresource:status
 
-// MapRole is the Schema for the maproles API
-type MapRole struct {
+// IamRoleMap is the Schema for the maproles API
+type IamRoleMap struct {
 	metav1.TypeMeta   `json:",inline"`
 	metav1.ObjectMeta `json:"metadata,omitempty"`
 
-	Spec   MapRoleSpec   `json:"spec,omitempty"`
-	Status MapRoleStatus `json:"status,omitempty"`
+	Spec   IamRoleMapSpec   `json:"spec,omitempty"`
+	Status IamRoleMapStatus `json:"status,omitempty"`
 }
 
 //+kubebuilder:object:root=true
 //+kubebuilder:resource:scope=Cluster
 
-// MapRoleList contains a list of MapRole
-type MapRoleList struct {
+// IamRoleMapList contains a list of IamRoleMap
+type IamRoleMapList struct {
 	metav1.TypeMeta `json:",inline"`
 	metav1.ListMeta `json:"metadata,omitempty"`
-	Items           []MapRole `json:"items"`
+	Items           []IamRoleMap `json:"items"`
 }
 
 func init() {
-	SchemeBuilder.Register(&MapRole{}, &MapRoleList{})
+	SchemeBuilder.Register(&IamRoleMap{}, &IamRoleMapList{})
 }
