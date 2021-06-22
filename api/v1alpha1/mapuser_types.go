@@ -28,8 +28,8 @@ type MapUserSpec struct {
 	// INSERT ADDITIONAL SPEC FIELDS - desired state of cluster
 	// Important: Run "make" to regenerate code after modifying this file
 
-	UserArn  string   `json:"userArn"`
-	UserName string   `json:"userName"`
+	UserArn  string   `json:"userarn"`
+	UserName string   `json:"username"`
 	Groups   []string `json:"groups"`
 }
 

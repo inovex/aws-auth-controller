@@ -28,8 +28,8 @@ type MapRoleSpec struct {
 	// INSERT ADDITIONAL SPEC FIELDS - desired state of cluster
 	// Important: Run "make" to regenerate code after modifying this file
 
-	RoleArn  string   `json:"roleArn"`
-	UserName string   `json:"userName"`
+	RoleArn  string   `json:"rolearn"`
+	UserName string   `json:"username"`
 	Groups   []string `json:"groups"`
 }
 

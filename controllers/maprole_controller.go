@@ -19,6 +19,7 @@ package controllers
 import (
 	"context"
 	"fmt"
+	"strconv"
 
 	corev1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/runtime"
@@ -59,8 +60,22 @@ func (r *MapRoleReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ct
 	if err != nil {
 		return ctrl.Result{}, err
 	}
+	version, ok := authCM.ObjectMeta.Annotations["aws-auth.inovex.de/authversion"]
+	if !ok {
+		version = "0"
+	}
+	intVersion, _ := strconv.Atoi(version)
 
-	fmt.Printf("%v\n", authCM.Data)
+	fmt.Printf("Raw Data: %v\n", authCM.Data)
+
+	intVersion++
+	authCM.Data["mapRoles"] = fmt.Sprintf("data version %d", intVersion)
+	authCM.ObjectMeta.Annotations["aws-auth.inovex.de/authversion"] = fmt.Sprintf("%d", intVersion)
+
+	err = r.Update(ctx, authCM)
+	if err != nil {
+		return ctrl.Result{}, err
+	}
 
 	return ctrl.Result{}, nil
 }
