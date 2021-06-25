@@ -1,9 +1,0 @@
-apiVersion: aws-auth.inovex.de/v1alpha1
-kind: IamUserMap
-metadata:
-  name: mapuser-sample
-spec:
-  userarn: arn:aws:iam::111122223333:user/admin
-  username: admin
-  groups:
-    - system:masters

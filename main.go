@@ -78,18 +78,11 @@ func main() {
 		os.Exit(1)
 	}
 
-	if err = (&controllers.IamRoleMapReconciler{
+	if err = (&controllers.AwsAuthMapReconciler{
 		Client: mgr.GetClient(),
 		Scheme: mgr.GetScheme(),
 	}).SetupWithManager(mgr); err != nil {
-		setupLog.Error(err, "unable to create controller", "controller", "IamRoleMap")
-		os.Exit(1)
-	}
-	if err = (&controllers.IamUserMapReconciler{
-		Client: mgr.GetClient(),
-		Scheme: mgr.GetScheme(),
-	}).SetupWithManager(mgr); err != nil {
-		setupLog.Error(err, "unable to create controller", "controller", "IamUserMap")
+		setupLog.Error(err, "unable to create controller", "controller", "AwsAuthMap")
 		os.Exit(1)
 	}
 	//+kubebuilder:scaffold:builder

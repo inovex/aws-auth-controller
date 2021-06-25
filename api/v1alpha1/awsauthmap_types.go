@@ -23,47 +23,57 @@ import (
 // EDIT THIS FILE!  THIS IS SCAFFOLDING FOR YOU TO OWN!
 // NOTE: json tags are required.  Any new fields you add must have json tags for the fields to be serialized.
 
-// IamUserMapSpec defines the desired state of IamUserMap
-type IamUserMapSpec struct {
-	// INSERT ADDITIONAL SPEC FIELDS - desired state of cluster
-	// Important: Run "make" to regenerate code after modifying this file
+// MapRolesSpec defines a mapping of an IAM role to an RBAC user and to RBAC groups.
+type MapRolesSpec struct {
+	RoleArn  string   `json:"rolearn"`
+	UserName string   `json:"username"`
+	Groups   []string `json:"groups"`
+}
 
+// MapUsersSpec defines a mapping of an IAM user to an RBAC user and to RBAC groups.
+type MapUsersSpec struct {
 	UserArn  string   `json:"userarn"`
 	UserName string   `json:"username"`
 	Groups   []string `json:"groups"`
 }
 
-// IamUserMapStatus defines the observed state of IamUserMap
-type IamUserMapStatus struct {
+// AwsAuthMapSpec defines the IAM role and user mappings to RBAC.
+type AwsAuthMapSpec struct {
+	MapRoles []MapRolesSpec `json:"mapRoles,omitempty"`
+	MapUsers []MapUsersSpec `json:"mapUsers,omitempty"`
+}
+
+// AwsAuthMapStatus defines the observed state of AwsAuthMap.
+type AwsAuthMapStatus struct {
 	// INSERT ADDITIONAL STATUS FIELD - define observed state of cluster
 	// Important: Run "make" to regenerate code after modifying this file
 
-	IsMapped bool `json:"isMapped"`
+	MapVersion bool `json:"mapVersion"`
 }
 
 //+kubebuilder:object:root=true
 //+kubebuilder:resource:scope=Cluster
 //+kubebuilder:subresource:status
 
-// IamUserMap is the Schema for the mapusers API
-type IamUserMap struct {
+// AwsAuthMap is the Schema for the maproles API
+type AwsAuthMap struct {
 	metav1.TypeMeta   `json:",inline"`
 	metav1.ObjectMeta `json:"metadata,omitempty"`
 
-	Spec   IamUserMapSpec   `json:"spec,omitempty"`
-	Status IamUserMapStatus `json:"status,omitempty"`
+	Spec   AwsAuthMapSpec   `json:"spec,omitempty"`
+	Status AwsAuthMapStatus `json:"status,omitempty"`
 }
 
 //+kubebuilder:object:root=true
 //+kubebuilder:resource:scope=Cluster
 
-// IamUserMapList contains a list of IamUserMap
-type IamUserMapList struct {
+// AwsAuthMapList contains a list of AwsAuthMap
+type AwsAuthMapList struct {
 	metav1.TypeMeta `json:",inline"`
 	metav1.ListMeta `json:"metadata,omitempty"`
-	Items           []IamUserMap `json:"items"`
+	Items           []AwsAuthMap `json:"items"`
 }
 
 func init() {
-	SchemeBuilder.Register(&IamUserMap{}, &IamUserMapList{})
+	SchemeBuilder.Register(&AwsAuthMap{}, &AwsAuthMapList{})
 }

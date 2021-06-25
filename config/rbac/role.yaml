@@ -1,13 +1,15 @@
-# permissions for end users to edit mapusers.
+
+---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
-  name: mapuser-editor-role
+  creationTimestamp: null
+  name: manager-role
 rules:
 - apiGroups:
   - aws-auth.inovex.de
   resources:
-  - mapusers
+  - maproles
   verbs:
   - create
   - delete
@@ -19,6 +21,14 @@ rules:
 - apiGroups:
   - aws-auth.inovex.de
   resources:
-  - mapusers/status
+  - maproles/finalizers
+  verbs:
+  - update
+- apiGroups:
+  - aws-auth.inovex.de
+  resources:
+  - maproles/status
   verbs:
   - get
+  - patch
+  - update

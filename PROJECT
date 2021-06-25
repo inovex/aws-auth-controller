@@ -10,7 +10,7 @@ resources:
   controller: true
   domain: inovex.de
   group: aws-auth
-  kind: IamRoleMap
+  kind: AwsAuthMap
   path: github.com/inovex/aws-auth-controller/api/v1alpha1
   version: v1alpha1
 - api:

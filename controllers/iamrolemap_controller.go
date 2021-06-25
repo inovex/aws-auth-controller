@@ -30,8 +30,8 @@ import (
 	awsauthv1alpha1 "github.com/inovex/aws-auth-controller/api/v1alpha1"
 )
 
-// IamRoleMapReconciler reconciles a IamRoleMap object
-type IamRoleMapReconciler struct {
+// AwsAuthMapReconciler reconciles a AwsAuthMap object
+type AwsAuthMapReconciler struct {
 	client.Client
 	Scheme *runtime.Scheme
 }
@@ -43,13 +43,13 @@ type IamRoleMapReconciler struct {
 // Reconcile is part of the main kubernetes reconciliation loop which aims to
 // move the current state of the cluster closer to the desired state.
 // TODO(user): Modify the Reconcile function to compare the state specified by
-// the IamRoleMap object against the actual cluster state, and then
+// the AwsAuthMap object against the actual cluster state, and then
 // perform operations to make the cluster state reflect the state specified by
 // the user.
 //
 // For more details, check Reconcile and its Result here:
 // - https://pkg.go.dev/sigs.k8s.io/controller-runtime@v0.8.3/pkg/reconcile
-func (r *IamRoleMapReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.Result, error) {
+func (r *AwsAuthMapReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.Result, error) {
 	_ = log.FromContext(ctx)
 
 	authCM := &corev1.ConfigMap{}
@@ -81,8 +81,8 @@ func (r *IamRoleMapReconciler) Reconcile(ctx context.Context, req ctrl.Request) 
 }
 
 // SetupWithManager sets up the controller with the Manager.
-func (r *IamRoleMapReconciler) SetupWithManager(mgr ctrl.Manager) error {
+func (r *AwsAuthMapReconciler) SetupWithManager(mgr ctrl.Manager) error {
 	return ctrl.NewControllerManagedBy(mgr).
-		For(&awsauthv1alpha1.IamRoleMap{}).
+		For(&awsauthv1alpha1.AwsAuthMap{}).
 		Complete(r)
 }

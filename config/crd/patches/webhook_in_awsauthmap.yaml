@@ -2,7 +2,7 @@
 apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
-  name: mapusers.aws-auth.inovex.de
+  name: awsauthmap.aws-auth.inovex.de
 spec:
   conversion:
     strategy: Webhook
