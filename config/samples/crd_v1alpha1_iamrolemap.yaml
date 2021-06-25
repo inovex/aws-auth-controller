@@ -1,4 +1,4 @@
-apiVersion: aws-auth.inovex.de/v1alpha1
+apiVersion: crd.awsauth.io/v1alpha1
 kind: AwsAuthMap
 metadata:
   name: awsauthmap-sample

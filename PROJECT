@@ -1,4 +1,4 @@
-domain: inovex.de
+domain: awsauth.io
 layout:
 - go.kubebuilder.io/v3
 projectName: aws-auth-controller
@@ -6,20 +6,11 @@ repo: github.com/inovex/aws-auth-controller
 resources:
 - api:
     crdVersion: v1
-    namespaced: true
+    namespaced: false
   controller: true
-  domain: inovex.de
-  group: aws-auth
+  domain: awsauth.io
+  group: crd
   kind: AwsAuthMap
-  path: github.com/inovex/aws-auth-controller/api/v1alpha1
-  version: v1alpha1
-- api:
-    crdVersion: v1
-    namespaced: true
-  controller: true
-  domain: inovex.de
-  group: aws-auth
-  kind: IamUserMap
   path: github.com/inovex/aws-auth-controller/api/v1alpha1
   version: v1alpha1
 version: "3"

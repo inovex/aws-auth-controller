@@ -7,7 +7,7 @@ metadata:
   name: manager-role
 rules:
 - apiGroups:
-  - aws-auth.inovex.de
+  - crd.awsauth.io
   resources:
   - maproles
   verbs:
@@ -19,13 +19,13 @@ rules:
   - update
   - watch
 - apiGroups:
-  - aws-auth.inovex.de
+  - crd.awsauth.io
   resources:
   - maproles/finalizers
   verbs:
   - update
 - apiGroups:
-  - aws-auth.inovex.de
+  - crd.awsauth.io
   resources:
   - maproles/status
   verbs:
