@@ -55,7 +55,7 @@ type AwsAuthMapStatus struct {
 //+kubebuilder:resource:scope=Cluster
 //+kubebuilder:subresource:status
 
-// AwsAuthMap is the Schema for the maproles API
+// AwsAuthMap is the Schema for the awsauthmaps API
 type AwsAuthMap struct {
 	metav1.TypeMeta   `json:",inline"`
 	metav1.ObjectMeta `json:"metadata,omitempty"`

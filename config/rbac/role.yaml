@@ -9,7 +9,7 @@ rules:
 - apiGroups:
   - crd.awsauth.io
   resources:
-  - maproles
+  - awsauthmaps
   verbs:
   - create
   - delete
@@ -21,13 +21,13 @@ rules:
 - apiGroups:
   - crd.awsauth.io
   resources:
-  - maproles/finalizers
+  - awsauthmaps/finalizers
   verbs:
   - update
 - apiGroups:
   - crd.awsauth.io
   resources:
-  - maproles/status
+  - awsauthmaps/status
   verbs:
   - get
   - patch

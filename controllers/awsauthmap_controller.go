@@ -36,9 +36,9 @@ type AwsAuthMapReconciler struct {
 	Scheme *runtime.Scheme
 }
 
-//+kubebuilder:rbac:groups=crd.awsauth.io,resources=maproles,verbs=get;list;watch;create;update;patch;delete
-//+kubebuilder:rbac:groups=crd.awsauth.io,resources=maproles/status,verbs=get;update;patch
-//+kubebuilder:rbac:groups=crd.awsauth.io,resources=maproles/finalizers,verbs=update
+//+kubebuilder:rbac:groups=crd.awsauth.io,resources=awsauthmaps,verbs=get;list;watch;create;update;patch;delete
+//+kubebuilder:rbac:groups=crd.awsauth.io,resources=awsauthmaps/status,verbs=get;update;patch
+//+kubebuilder:rbac:groups=crd.awsauth.io,resources=awsauthmaps/finalizers,verbs=update
 
 // Reconcile is part of the main kubernetes reconciliation loop which aims to
 // move the current state of the cluster closer to the desired state.

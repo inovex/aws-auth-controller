@@ -1,13 +1,13 @@
-# permissions for end users to edit maproles.
+# permissions for end users to edit awsauthmaps.
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
-  name: maprole-editor-role
+  name: awsauthmap-editor-role
 rules:
 - apiGroups:
   - crd.awsauth.io
   resources:
-  - maproles
+  - awsauthmaps
   verbs:
   - create
   - delete
@@ -19,6 +19,6 @@ rules:
 - apiGroups:
   - crd.awsauth.io
   resources:
-  - maproles/status
+  - awsauthmaps/status
   verbs:
   - get
