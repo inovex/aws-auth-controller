@@ -54,6 +54,7 @@ type AwsAuthMapStatus struct {
 //+kubebuilder:object:root=true
 //+kubebuilder:resource:scope=Cluster
 //+kubebuilder:subresource:status
+//+kubebuilder:printcolumn:name="MapVersion",type=integer,JSONPath=`.status.mapVersion`
 
 // AwsAuthMap is the Schema for the awsauthmaps API
 type AwsAuthMap struct {

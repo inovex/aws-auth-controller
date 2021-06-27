@@ -26,6 +26,7 @@ import (
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/log"
+	"sigs.k8s.io/yaml"
 
 	awsauthv1alpha1 "github.com/inovex/aws-auth-controller/api/v1alpha1"
 )
@@ -35,6 +36,9 @@ type AwsAuthMapReconciler struct {
 	client.Client
 	Scheme *runtime.Scheme
 }
+
+type MapRoles []awsauthv1alpha1.MapRolesSpec
+type MapUsers []awsauthv1alpha1.MapUsersSpec
 
 //+kubebuilder:rbac:groups=crd.awsauth.io,resources=awsauthmaps,verbs=get;list;watch;create;update;patch;delete
 //+kubebuilder:rbac:groups=crd.awsauth.io,resources=awsauthmaps/status,verbs=get;update;patch
@@ -59,35 +63,40 @@ func (r *AwsAuthMapReconciler) Reconcile(ctx context.Context, req ctrl.Request) 
 	logger.Info("Read Version", "version", currentVersion)
 
 	mapList := &awsauthv1alpha1.AwsAuthMapList{}
-	err = r.List(ctx, mapList)
+	//selector := fields.ParseSelectorOrDie(fmt.Sprintf("status.mapVersion!=%d", currentVersion))
+	err = r.List(ctx, mapList /*, client.MatchingFieldsSelector{selector}*/)
 
 	totalCount := len(mapList.Items)
-	matchedCount := 0
-	for i, snippet := range mapList.Items {
-		matched := snippet.Status.MapVersion == currentVersion
-		if matched {
-			matchedCount++
-		} else {
-			snippet.Status.MapVersion = currentVersion
-			err = r.Status().Update(ctx, &snippet)
-			if err != nil {
-				logger.Error(err, "Status Update failed", "name", snippet.Name)
-			}
+	newMaps := []*awsauthv1alpha1.AwsAuthMap{}
+	mapRoles := MapRoles{}
+	mapUsers := MapUsers{}
+	for _, authMap := range mapList.Items {
+		if authMap.Status.MapVersion != currentVersion {
+			newMaps = append(newMaps, &authMap)
 		}
-		fmt.Printf("%d: %s  %d(%v)\n", i+1, snippet.Name, snippet.Status.MapVersion, matched)
+		mapRoles = append(mapRoles, authMap.Spec.MapRoles...)
+		mapUsers = append(mapUsers, authMap.Spec.MapUsers...)
 	}
-	fmt.Printf("Matched: %d /%d\n", matchedCount, totalCount)
-	/*		intVersion++
-			authCM.Data["mapRoles"] = fmt.Sprintf("data version %d", intVersion)
-			authCM.ObjectMeta.Annotations["awsauth.io/authversion"] = fmt.Sprintf("%d", intVersion)
+	logger.Info("Maps counted", "new", len(newMaps), "total", totalCount)
 
-			err = r.Update(ctx, authCM)
-			if err != nil {
-				return ctrl.Result{}, err
-			}
+	if len(newMaps) == 0 {
+		return ctrl.Result{}, nil
+	}
 
-			r.Client.*/
+	currentVersion++
 
+	err = r.updateConfigMap(ctx, mapRoles, mapUsers, currentVersion)
+	if err != nil {
+		return ctrl.Result{}, err
+	}
+
+	for _, newMap := range newMaps {
+		newMap.Status.MapVersion = currentVersion
+		err = r.Status().Update(ctx, newMap)
+		if err != nil {
+			logger.Error(err, "Status Update failed", "name", newMap.Name)
+		}
+	}
 	return ctrl.Result{}, nil
 }
 
@@ -116,4 +125,35 @@ func (r *AwsAuthMapReconciler) findConfigMapVersion(ctx context.Context) (int, e
 		return 0, err
 	}
 	return intVersion, nil
+}
+
+func (r *AwsAuthMapReconciler) updateConfigMap(ctx context.Context, mapRoles MapRoles, mapUsers MapUsers, version int) error {
+	mapRolesYaml, err := yaml.Marshal(mapRoles)
+	if err != nil {
+		return err
+	}
+	mapUsersYaml, err := yaml.Marshal(mapUsers)
+	if err != nil {
+		return err
+	}
+
+	authCM := &corev1.ConfigMap{}
+	err = r.Get(ctx, client.ObjectKey{
+		Namespace: "kube-system",
+		Name:      "aws-auth",
+	}, authCM)
+	if err != nil {
+		return err
+	}
+
+	authCM.ObjectMeta.Annotations["awsauth.io/authversion"] = fmt.Sprintf("%d", version)
+	authCM.Data["mapRoles"] = string(mapRolesYaml)
+	authCM.Data["mapUsers"] = string(mapUsersYaml)
+
+	err = r.Update(ctx, authCM)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
