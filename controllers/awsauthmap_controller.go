@@ -50,32 +50,43 @@ type AwsAuthMapReconciler struct {
 // For more details, check Reconcile and its Result here:
 // - https://pkg.go.dev/sigs.k8s.io/controller-runtime@v0.8.3/pkg/reconcile
 func (r *AwsAuthMapReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.Result, error) {
-	_ = log.FromContext(ctx)
+	logger := log.FromContext(ctx)
 
-	authCM := &corev1.ConfigMap{}
-	err := r.Get(ctx, client.ObjectKey{
-		Namespace: "kube-system",
-		Name:      "aws-auth",
-	}, authCM)
+	currentVersion, err := r.findConfigMapVersion(ctx)
 	if err != nil {
 		return ctrl.Result{}, err
 	}
-	version, ok := authCM.ObjectMeta.Annotations["crd.awsauth.io/authversion"]
-	if !ok {
-		version = "0"
+	logger.Info("Read Version", "version", currentVersion)
+
+	mapList := &awsauthv1alpha1.AwsAuthMapList{}
+	err = r.List(ctx, mapList)
+
+	totalCount := len(mapList.Items)
+	matchedCount := 0
+	for i, snippet := range mapList.Items {
+		matched := snippet.Status.MapVersion == currentVersion
+		if matched {
+			matchedCount++
+		} else {
+			snippet.Status.MapVersion = currentVersion
+			err = r.Status().Update(ctx, &snippet)
+			if err != nil {
+				logger.Error(err, "Status Update failed", "name", snippet.Name)
+			}
+		}
+		fmt.Printf("%d: %s  %d(%v)\n", i+1, snippet.Name, snippet.Status.MapVersion, matched)
 	}
-	intVersion, _ := strconv.Atoi(version)
+	fmt.Printf("Matched: %d /%d\n", matchedCount, totalCount)
+	/*		intVersion++
+			authCM.Data["mapRoles"] = fmt.Sprintf("data version %d", intVersion)
+			authCM.ObjectMeta.Annotations["awsauth.io/authversion"] = fmt.Sprintf("%d", intVersion)
 
-	fmt.Printf("Raw Data: %v\n", authCM.Data)
+			err = r.Update(ctx, authCM)
+			if err != nil {
+				return ctrl.Result{}, err
+			}
 
-	intVersion++
-	authCM.Data["mapRoles"] = fmt.Sprintf("data version %d", intVersion)
-	authCM.ObjectMeta.Annotations["crd.awsauth.io/authversion"] = fmt.Sprintf("%d", intVersion)
-
-	err = r.Update(ctx, authCM)
-	if err != nil {
-		return ctrl.Result{}, err
-	}
+			r.Client.*/
 
 	return ctrl.Result{}, nil
 }
@@ -85,4 +96,24 @@ func (r *AwsAuthMapReconciler) SetupWithManager(mgr ctrl.Manager) error {
 	return ctrl.NewControllerManagedBy(mgr).
 		For(&awsauthv1alpha1.AwsAuthMap{}).
 		Complete(r)
+}
+
+func (r *AwsAuthMapReconciler) findConfigMapVersion(ctx context.Context) (int, error) {
+	authCM := &corev1.ConfigMap{}
+	err := r.Get(ctx, client.ObjectKey{
+		Namespace: "kube-system",
+		Name:      "aws-auth",
+	}, authCM)
+	if err != nil {
+		return 0, err
+	}
+	version, ok := authCM.ObjectMeta.Annotations["awsauth.io/authversion"]
+	if !ok {
+		version = "0"
+	}
+	intVersion, err := strconv.Atoi(version)
+	if err != nil {
+		return 0, err
+	}
+	return intVersion, nil
 }

@@ -48,7 +48,7 @@ type AwsAuthMapStatus struct {
 	// INSERT ADDITIONAL STATUS FIELD - define observed state of cluster
 	// Important: Run "make" to regenerate code after modifying this file
 
-	MapVersion bool `json:"mapVersion"`
+	MapVersion int `json:"mapVersion"`
 }
 
 //+kubebuilder:object:root=true
