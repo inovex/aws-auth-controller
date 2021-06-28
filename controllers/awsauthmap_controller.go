@@ -22,6 +22,7 @@ import (
 	"strconv"
 
 	corev1 "k8s.io/api/core/v1"
+	apierrs "k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/apimachinery/pkg/runtime"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
@@ -56,30 +57,50 @@ type MapUsers []awsauthv1alpha1.MapUsersSpec
 func (r *AwsAuthMapReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.Result, error) {
 	logger := log.FromContext(ctx)
 
+	logger.Info("Reconcile Request received", "objectName", req.NamespacedName)
 	currentVersion, err := r.findConfigMapVersion(ctx)
 	if err != nil {
 		return ctrl.Result{}, err
 	}
 	logger.Info("Read Version", "version", currentVersion)
 
+	thisMap := &awsauthv1alpha1.AwsAuthMap{}
+	err = r.Get(ctx, client.ObjectKey{
+		Name: req.NamespacedName.Name}, thisMap)
+
+	outOfSync := false
+
+	if err == nil {
+		if thisMap.Status.MapVersion == currentVersion {
+			logger.Info("Already synced", "version", currentVersion)
+			return ctrl.Result{}, nil
+		}
+	} else if apierrs.IsNotFound(err) {
+		logger.Info("Deletion event, updating.")
+		outOfSync = true
+	} else {
+		fmt.Printf("Error: %v\n", err)
+		return ctrl.Result{}, err
+	}
+
 	mapList := &awsauthv1alpha1.AwsAuthMapList{}
 	//selector := fields.ParseSelectorOrDie(fmt.Sprintf("status.mapVersion!=%d", currentVersion))
 	err = r.List(ctx, mapList /*, client.MatchingFieldsSelector{selector}*/)
 
 	totalCount := len(mapList.Items)
-	newMaps := []*awsauthv1alpha1.AwsAuthMap{}
 	mapRoles := MapRoles{}
 	mapUsers := MapUsers{}
 	for _, authMap := range mapList.Items {
 		if authMap.Status.MapVersion != currentVersion {
-			newMaps = append(newMaps, &authMap)
+			outOfSync = true
+			logger.Info("Found out-of-sync map", "name", authMap.Name, "version", authMap.Status.MapVersion)
 		}
 		mapRoles = append(mapRoles, authMap.Spec.MapRoles...)
 		mapUsers = append(mapUsers, authMap.Spec.MapUsers...)
 	}
-	logger.Info("Maps counted", "new", len(newMaps), "total", totalCount)
+	logger.Info("Maps counted", "total", totalCount, "out-of-sync", outOfSync)
 
-	if len(newMaps) == 0 {
+	if !outOfSync {
 		return ctrl.Result{}, nil
 	}
 
@@ -90,13 +111,16 @@ func (r *AwsAuthMapReconciler) Reconcile(ctx context.Context, req ctrl.Request) 
 		return ctrl.Result{}, err
 	}
 
-	for _, newMap := range newMaps {
-		newMap.Status.MapVersion = currentVersion
-		err = r.Status().Update(ctx, newMap)
+	for _, authMap := range mapList.Items {
+		authMap.Status.MapVersion = currentVersion
+		err = r.Status().Update(ctx, &authMap)
 		if err != nil {
-			logger.Error(err, "Status Update failed", "name", newMap.Name)
+			logger.Error(err, "Status Update failed", "name", authMap.Name, "version", currentVersion)
+		} else {
+			logger.Info("Status updated", "name", authMap.Name, "version", currentVersion)
 		}
 	}
+	logger.Info("Reconciliation completed", "newVersion", currentVersion)
 	return ctrl.Result{}, nil
 }
 
