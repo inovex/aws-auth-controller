@@ -17,6 +17,9 @@ limitations under the License.
 package v1alpha1
 
 import (
+	"crypto/sha256"
+	"fmt"
+	"io"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
@@ -43,12 +46,32 @@ type AwsAuthMapSpec struct {
 	MapUsers []MapUsersSpec `json:"mapUsers,omitempty"`
 }
 
+func (s *AwsAuthMapSpec) CalcCheckSum() string {
+	shaHash := sha256.New()
+	for _, mr := range s.MapRoles {
+		io.WriteString(shaHash, mr.RoleArn)
+		io.WriteString(shaHash, mr.UserName)
+		for _, group := range mr.Groups {
+			io.WriteString(shaHash, group)
+		}
+	}
+	for _, mu := range s.MapUsers {
+		io.WriteString(shaHash, mu.UserArn)
+		io.WriteString(shaHash, mu.UserName)
+		for _, group := range mu.Groups {
+			io.WriteString(shaHash, group)
+		}
+	}
+	return fmt.Sprintf("%x", shaHash.Sum(nil))
+}
+
 // AwsAuthMapStatus defines the observed state of AwsAuthMap.
 type AwsAuthMapStatus struct {
 	// INSERT ADDITIONAL STATUS FIELD - define observed state of cluster
 	// Important: Run "make" to regenerate code after modifying this file
 
-	MapVersion int `json:"mapVersion"`
+	MapVersion int    `json:"mapVersion"`
+	CheckSum   string `json:"checkSum"`
 }
 
 //+kubebuilder:object:root=true
@@ -63,6 +86,10 @@ type AwsAuthMap struct {
 
 	Spec   AwsAuthMapSpec   `json:"spec,omitempty"`
 	Status AwsAuthMapStatus `json:"status,omitempty"`
+}
+
+func (m *AwsAuthMap) IsChanged() bool {
+	return m.Spec.CalcCheckSum() != m.Status.CheckSum
 }
 
 //+kubebuilder:object:root=true

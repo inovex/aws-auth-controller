@@ -71,7 +71,10 @@ func (r *AwsAuthMapReconciler) Reconcile(ctx context.Context, req ctrl.Request) 
 	outOfSync := false
 
 	if err == nil {
-		if thisMap.Status.MapVersion == currentVersion {
+		if thisMap.IsChanged() {
+			logger.Info("Content changed, updating.")
+			outOfSync = true
+		} else if thisMap.Status.MapVersion == currentVersion {
 			logger.Info("Already synced", "version", currentVersion)
 			return ctrl.Result{}, nil
 		}
@@ -113,6 +116,7 @@ func (r *AwsAuthMapReconciler) Reconcile(ctx context.Context, req ctrl.Request) 
 
 	for _, authMap := range mapList.Items {
 		authMap.Status.MapVersion = currentVersion
+		authMap.Status.CheckSum = authMap.Spec.CalcCheckSum()
 		err = r.Status().Update(ctx, &authMap)
 		if err != nil {
 			logger.Error(err, "Status Update failed", "name", authMap.Name, "version", currentVersion)
