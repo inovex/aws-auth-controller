@@ -2,6 +2,7 @@ apiVersion: crd.awsauth.io/v1beta1
 kind: AwsAuthMap
 metadata:
   name: awsauthmap-sample
+  namespace: sample-namespace
 spec:
   mapRoles:
     - rolearn: arn:aws:iam::111122223333:role/eksctl-my-cluster-nodegroup-standard-wo-NodeInstanceRole-1WP3NUE3O6UCF

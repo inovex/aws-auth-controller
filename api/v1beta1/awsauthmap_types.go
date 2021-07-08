@@ -75,7 +75,6 @@ type AwsAuthMapStatus struct {
 }
 
 //+kubebuilder:object:root=true
-//+kubebuilder:resource:scope=Cluster
 //+kubebuilder:subresource:status
 //+kubebuilder:printcolumn:name="MapVersion",type=integer,JSONPath=`.status.mapVersion`
 
@@ -93,7 +92,6 @@ func (m *AwsAuthMap) IsChanged() bool {
 }
 
 //+kubebuilder:object:root=true
-//+kubebuilder:resource:scope=Cluster
 
 // AwsAuthMapList contains a list of AwsAuthMap
 type AwsAuthMapList struct {
