@@ -46,6 +46,7 @@ type AwsAuthMapSpec struct {
 	MapUsers []MapUsersSpec `json:"mapUsers,omitempty"`
 }
 
+// CalcCheckSum adds all string values into a checksum for identifying changes.
 func (s *AwsAuthMapSpec) CalcCheckSum() string {
 	shaHash := sha256.New()
 	for _, mr := range s.MapRoles {
@@ -87,6 +88,7 @@ type AwsAuthMap struct {
 	Status AwsAuthMapStatus `json:"status,omitempty"`
 }
 
+// IsChanged indicates if the stored and calculated checksums differ.
 func (m *AwsAuthMap) IsChanged() bool {
 	return m.Spec.CalcCheckSum() != m.Status.CheckSum
 }

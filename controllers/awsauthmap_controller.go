@@ -48,7 +48,6 @@ type MapUsers []awsauthv1beta1.MapUsersSpec
 
 // Reconcile is part of the main kubernetes reconciliation loop which aims to
 // move the current state of the cluster closer to the desired state.
-
 // For more details, check Reconcile and its Result here:
 // - https://pkg.go.dev/sigs.k8s.io/controller-runtime@v0.8.3/pkg/reconcile
 func (r *AwsAuthMapReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.Result, error) {
@@ -64,8 +63,7 @@ func (r *AwsAuthMapReconciler) Reconcile(ctx context.Context, req ctrl.Request) 
 	thisMap := &awsauthv1beta1.AwsAuthMap{}
 	err = r.Get(ctx, client.ObjectKey{
 		Name:      req.NamespacedName.Name,
-		Namespace: req.NamespacedName.Namespace,
-	},
+		Namespace: req.NamespacedName.Namespace},
 		thisMap)
 
 	outOfSync := false
@@ -135,6 +133,7 @@ func (r *AwsAuthMapReconciler) SetupWithManager(mgr ctrl.Manager) error {
 		Complete(r)
 }
 
+// findConfigMapVersion reads the current version of the aws-auth Config-Map from its annotations.
 func (r *AwsAuthMapReconciler) findConfigMapVersion(ctx context.Context) (int, error) {
 	authCM := &corev1.ConfigMap{}
 	err := r.Get(ctx, client.ObjectKey{
@@ -155,6 +154,7 @@ func (r *AwsAuthMapReconciler) findConfigMapVersion(ctx context.Context) (int, e
 	return intVersion, nil
 }
 
+// updateConfigMap renders mappings in Yaml and writes them to the aws-auth ConfigMap.
 func (r *AwsAuthMapReconciler) updateConfigMap(ctx context.Context, mapRoles MapRoles, mapUsers MapUsers, version int) error {
 	authCM := &corev1.ConfigMap{}
 	err := r.Get(ctx, client.ObjectKey{
