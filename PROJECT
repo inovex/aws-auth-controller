@@ -11,6 +11,6 @@ resources:
   domain: awsauth.io
   group: crd
   kind: AwsAuthMap
-  path: github.com/inovex/aws-auth-controller/api/v1alpha1
-  version: v1alpha1
+  path: github.com/inovex/aws-auth-controller/api/v1beta1
+  version: v1beta1
 version: "3"

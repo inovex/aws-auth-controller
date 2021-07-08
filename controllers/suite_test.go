@@ -30,7 +30,7 @@ import (
 	logf "sigs.k8s.io/controller-runtime/pkg/log"
 	"sigs.k8s.io/controller-runtime/pkg/log/zap"
 
-	awsauthv1alpha1 "github.com/inovex/aws-auth-controller/api/v1alpha1"
+	awsauthv1beta1 "github.com/inovex/aws-auth-controller/api/v1beta1"
 	//+kubebuilder:scaffold:imports
 )
 
@@ -62,10 +62,10 @@ var _ = BeforeSuite(func() {
 	Expect(err).NotTo(HaveOccurred())
 	Expect(cfg).NotTo(BeNil())
 
-	err = awsauthv1alpha1.AddToScheme(scheme.Scheme)
+	err = awsauthv1beta1.AddToScheme(scheme.Scheme)
 	Expect(err).NotTo(HaveOccurred())
 
-	err = awsauthv1alpha1.AddToScheme(scheme.Scheme)
+	err = awsauthv1beta1.AddToScheme(scheme.Scheme)
 	Expect(err).NotTo(HaveOccurred())
 
 	//+kubebuilder:scaffold:scheme

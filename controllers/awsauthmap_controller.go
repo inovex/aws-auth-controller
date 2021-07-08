@@ -29,7 +29,7 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/log"
 	"sigs.k8s.io/yaml"
 
-	awsauthv1alpha1 "github.com/inovex/aws-auth-controller/api/v1alpha1"
+	awsauthv1beta1 "github.com/inovex/aws-auth-controller/api/v1beta1"
 )
 
 // AwsAuthMapReconciler reconciles a AwsAuthMap object
@@ -38,8 +38,8 @@ type AwsAuthMapReconciler struct {
 	Scheme *runtime.Scheme
 }
 
-type MapRoles []awsauthv1alpha1.MapRolesSpec
-type MapUsers []awsauthv1alpha1.MapUsersSpec
+type MapRoles []awsauthv1beta1.MapRolesSpec
+type MapUsers []awsauthv1beta1.MapUsersSpec
 
 //+kubebuilder:rbac:groups=crd.awsauth.io,resources=awsauthmaps,verbs=get;list;watch;create;update;patch;delete
 //+kubebuilder:rbac:groups=crd.awsauth.io,resources=awsauthmaps/status,verbs=get;update;patch
@@ -64,7 +64,7 @@ func (r *AwsAuthMapReconciler) Reconcile(ctx context.Context, req ctrl.Request) 
 	}
 	logger.Info("Read Version", "version", currentVersion)
 
-	thisMap := &awsauthv1alpha1.AwsAuthMap{}
+	thisMap := &awsauthv1beta1.AwsAuthMap{}
 	err = r.Get(ctx, client.ObjectKey{
 		Name: req.NamespacedName.Name}, thisMap)
 
@@ -86,7 +86,7 @@ func (r *AwsAuthMapReconciler) Reconcile(ctx context.Context, req ctrl.Request) 
 		return ctrl.Result{}, err
 	}
 
-	mapList := &awsauthv1alpha1.AwsAuthMapList{}
+	mapList := &awsauthv1beta1.AwsAuthMapList{}
 	//selector := fields.ParseSelectorOrDie(fmt.Sprintf("status.mapVersion!=%d", currentVersion))
 	err = r.List(ctx, mapList /*, client.MatchingFieldsSelector{selector}*/)
 
@@ -131,7 +131,7 @@ func (r *AwsAuthMapReconciler) Reconcile(ctx context.Context, req ctrl.Request) 
 // SetupWithManager sets up the controller with the Manager.
 func (r *AwsAuthMapReconciler) SetupWithManager(mgr ctrl.Manager) error {
 	return ctrl.NewControllerManagedBy(mgr).
-		For(&awsauthv1alpha1.AwsAuthMap{}).
+		For(&awsauthv1beta1.AwsAuthMap{}).
 		Complete(r)
 }
 

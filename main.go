@@ -31,7 +31,7 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/healthz"
 	"sigs.k8s.io/controller-runtime/pkg/log/zap"
 
-	awsauthv1alpha1 "github.com/inovex/aws-auth-controller/api/v1alpha1"
+	awsauthv1beta1 "github.com/inovex/aws-auth-controller/api/v1beta1"
 	"github.com/inovex/aws-auth-controller/controllers"
 	//+kubebuilder:scaffold:imports
 )
@@ -44,7 +44,7 @@ var (
 func init() {
 	utilruntime.Must(clientgoscheme.AddToScheme(scheme))
 
-	utilruntime.Must(awsauthv1alpha1.AddToScheme(scheme))
+	utilruntime.Must(awsauthv1beta1.AddToScheme(scheme))
 	//+kubebuilder:scaffold:scheme
 }
 
