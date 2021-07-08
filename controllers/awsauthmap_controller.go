@@ -20,6 +20,7 @@ import (
 	"context"
 	"fmt"
 	"strconv"
+	"strings"
 
 	corev1 "k8s.io/api/core/v1"
 	apierrs "k8s.io/apimachinery/pkg/api/errors"
@@ -47,11 +48,7 @@ type MapUsers []awsauthv1beta1.MapUsersSpec
 
 // Reconcile is part of the main kubernetes reconciliation loop which aims to
 // move the current state of the cluster closer to the desired state.
-// TODO(user): Modify the Reconcile function to compare the state specified by
-// the AwsAuthMap object against the actual cluster state, and then
-// perform operations to make the cluster state reflect the state specified by
-// the user.
-//
+
 // For more details, check Reconcile and its Result here:
 // - https://pkg.go.dev/sigs.k8s.io/controller-runtime@v0.8.3/pkg/reconcile
 func (r *AwsAuthMapReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.Result, error) {
@@ -66,7 +63,10 @@ func (r *AwsAuthMapReconciler) Reconcile(ctx context.Context, req ctrl.Request) 
 
 	thisMap := &awsauthv1beta1.AwsAuthMap{}
 	err = r.Get(ctx, client.ObjectKey{
-		Name: req.NamespacedName.Name}, thisMap)
+		Name:      req.NamespacedName.Name,
+		Namespace: req.NamespacedName.Namespace,
+	},
+		thisMap)
 
 	outOfSync := false
 
@@ -156,6 +156,27 @@ func (r *AwsAuthMapReconciler) findConfigMapVersion(ctx context.Context) (int, e
 }
 
 func (r *AwsAuthMapReconciler) updateConfigMap(ctx context.Context, mapRoles MapRoles, mapUsers MapUsers, version int) error {
+	authCM := &corev1.ConfigMap{}
+	err := r.Get(ctx, client.ObjectKey{
+		Namespace: "kube-system",
+		Name:      "aws-auth",
+	}, authCM)
+	if err != nil {
+		return err
+	}
+
+	// Preserve system:node mappings
+	currentMapRoles := &MapRoles{}
+	err = yaml.Unmarshal([]byte(authCM.Data["mapRoles"]), currentMapRoles)
+	if err != nil {
+		return err
+	}
+	for _, cmr := range *currentMapRoles {
+		if strings.HasPrefix(cmr.UserName, "system:node:") {
+			mapRoles = append(mapRoles, cmr)
+		}
+	}
+
 	mapRolesYaml, err := yaml.Marshal(mapRoles)
 	if err != nil {
 		return err
@@ -165,15 +186,10 @@ func (r *AwsAuthMapReconciler) updateConfigMap(ctx context.Context, mapRoles Map
 		return err
 	}
 
-	authCM := &corev1.ConfigMap{}
-	err = r.Get(ctx, client.ObjectKey{
-		Namespace: "kube-system",
-		Name:      "aws-auth",
-	}, authCM)
-	if err != nil {
-		return err
+	if authCM.ObjectMeta.Annotations == nil {
+		// No annotations yet.
+		authCM.ObjectMeta.Annotations = make(map[string]string)
 	}
-
 	authCM.ObjectMeta.Annotations["awsauth.io/authversion"] = fmt.Sprintf("%d", version)
 	authCM.Data["mapRoles"] = string(mapRolesYaml)
 	authCM.Data["mapUsers"] = string(mapUsersYaml)
