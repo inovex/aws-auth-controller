@@ -141,7 +141,11 @@ func (r *AwsAuthMapReconciler) findConfigMapVersion(ctx context.Context) (int, e
 		Name:      "aws-auth",
 	}, authCM)
 	if err != nil {
-		return 0, err
+		if apierrs.IsNotFound(err) {
+			return 0, nil
+		} else {
+			return 0, err
+		}
 	}
 	version, ok := authCM.ObjectMeta.Annotations["awsauth.io/authversion"]
 	if !ok {
@@ -156,13 +160,30 @@ func (r *AwsAuthMapReconciler) findConfigMapVersion(ctx context.Context) (int, e
 
 // updateConfigMap renders mappings in Yaml and writes them to the aws-auth ConfigMap.
 func (r *AwsAuthMapReconciler) updateConfigMap(ctx context.Context, mapRoles MapRoles, mapUsers MapUsers, version int) error {
+	logger := log.FromContext(ctx)
+
 	authCM := &corev1.ConfigMap{}
 	err := r.Get(ctx, client.ObjectKey{
 		Namespace: "kube-system",
 		Name:      "aws-auth",
 	}, authCM)
+
+	// Check for missing ConfigMap
 	if err != nil {
-		return err
+		if apierrs.IsNotFound(err) {
+			logger.Info("ConfigMap aws-auth missing, creating it now.")
+			authCM.ObjectMeta.Namespace = "kube-system"
+			authCM.ObjectMeta.Name = "aws-auth"
+			authCM.Data = make(map[string]string)
+			authCM.Data["mapRoles"] = ""
+			authCM.Data["mapUsers"] = ""
+			err = r.Create(ctx, authCM)
+			if err != nil {
+				return err
+			}
+		} else {
+			return err
+		}
 	}
 
 	// Preserve system:node mappings
