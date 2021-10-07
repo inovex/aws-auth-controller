@@ -20,6 +20,7 @@ import (
 	"crypto/sha256"
 	"fmt"
 	"io"
+
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
@@ -28,6 +29,7 @@ import (
 
 // MapRolesSpec defines a mapping of an IAM role to an RBAC user and to RBAC groups.
 type MapRolesSpec struct {
+	//+kubebuilder:validation:Pattern="^arn:[^:\n]*:iam:[^:\n]*:[^:\n]*:role/.+$"
 	RoleArn  string   `json:"rolearn"`
 	UserName string   `json:"username"`
 	Groups   []string `json:"groups"`
@@ -35,6 +37,7 @@ type MapRolesSpec struct {
 
 // MapUsersSpec defines a mapping of an IAM user to an RBAC user and to RBAC groups.
 type MapUsersSpec struct {
+	//+kubebuilder:validation:Pattern="^arn:[^:\n]*:iam:[^:\n]*:[^:\n]*:user/.+$"
 	UserArn  string   `json:"userarn"`
 	UserName string   `json:"username"`
 	Groups   []string `json:"groups"`
