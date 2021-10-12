@@ -9,7 +9,7 @@ rules:
 - apiGroups:
   - crd.awsauth.io
   resources:
-  - awsauthmaps
+  - awsauthmapsnippets
   verbs:
   - create
   - delete
@@ -21,13 +21,13 @@ rules:
 - apiGroups:
   - crd.awsauth.io
   resources:
-  - awsauthmaps/finalizers
+  - awsauthmapsnippets/finalizers
   verbs:
   - update
 - apiGroups:
   - crd.awsauth.io
   resources:
-  - awsauthmaps/status
+  - awsauthmapsnippets/status
   verbs:
   - get
   - patch

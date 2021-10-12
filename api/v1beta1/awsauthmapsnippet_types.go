@@ -17,10 +17,6 @@ limitations under the License.
 package v1beta1
 
 import (
-	"crypto/sha256"
-	"fmt"
-	"io"
-
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
@@ -43,68 +39,43 @@ type MapUsersSpec struct {
 	Groups   []string `json:"groups"`
 }
 
-// AwsAuthMapSpec defines the IAM role and user mappings to RBAC.
-type AwsAuthMapSpec struct {
+// AwsAuthMapSnippetSpec defines the IAM role and user mappings to RBAC.
+type AwsAuthMapSnippetSpec struct {
 	MapRoles []MapRolesSpec `json:"mapRoles,omitempty"`
 	MapUsers []MapUsersSpec `json:"mapUsers,omitempty"`
 }
 
-// CalcCheckSum adds all string values into a checksum for identifying changes.
-func (s *AwsAuthMapSpec) CalcCheckSum() string {
-	shaHash := sha256.New()
-	for _, mr := range s.MapRoles {
-		io.WriteString(shaHash, mr.RoleArn)
-		io.WriteString(shaHash, mr.UserName)
-		for _, group := range mr.Groups {
-			io.WriteString(shaHash, group)
-		}
-	}
-	for _, mu := range s.MapUsers {
-		io.WriteString(shaHash, mu.UserArn)
-		io.WriteString(shaHash, mu.UserName)
-		for _, group := range mu.Groups {
-			io.WriteString(shaHash, group)
-		}
-	}
-	return fmt.Sprintf("%x", shaHash.Sum(nil))
-}
-
-// AwsAuthMapStatus defines the observed state of AwsAuthMap.
-type AwsAuthMapStatus struct {
+// AwsAuthMapSnippetStatus defines the observed state of AwsAuthMapSnippet.
+type AwsAuthMapSnippetStatus struct {
 	// INSERT ADDITIONAL STATUS FIELD - define observed state of cluster
 	// Important: Run "make" to regenerate code after modifying this file
 
-	MapVersion int    `json:"mapVersion"`
-	CheckSum   string `json:"checkSum"`
+	RoleArns []string `json:"roleArns,omitempty"`
+	UserArns []string `json:"userArns,omitempty"`
 }
 
 //+kubebuilder:object:root=true
 //+kubebuilder:subresource:status
 //+kubebuilder:printcolumn:name="MapVersion",type=integer,JSONPath=`.status.mapVersion`
 
-// AwsAuthMap is the Schema for the awsauthmaps API
-type AwsAuthMap struct {
+// AwsAuthMapSnippet is the Schema for the awsauthmapsnippets API
+type AwsAuthMapSnippet struct {
 	metav1.TypeMeta   `json:",inline"`
 	metav1.ObjectMeta `json:"metadata,omitempty"`
 
-	Spec   AwsAuthMapSpec   `json:"spec,omitempty"`
-	Status AwsAuthMapStatus `json:"status,omitempty"`
-}
-
-// IsChanged indicates if the stored and calculated checksums differ.
-func (m *AwsAuthMap) IsChanged() bool {
-	return m.Spec.CalcCheckSum() != m.Status.CheckSum
+	Spec   AwsAuthMapSnippetSpec   `json:"spec,omitempty"`
+	Status AwsAuthMapSnippetStatus `json:"status,omitempty"`
 }
 
 //+kubebuilder:object:root=true
 
-// AwsAuthMapList contains a list of AwsAuthMap
-type AwsAuthMapList struct {
+// AwsAuthMapSnippetList contains a list of AwsAuthMapSnippet
+type AwsAuthMapSnippetList struct {
 	metav1.TypeMeta `json:",inline"`
 	metav1.ListMeta `json:"metadata,omitempty"`
-	Items           []AwsAuthMap `json:"items"`
+	Items           []AwsAuthMapSnippet `json:"items"`
 }
 
 func init() {
-	SchemeBuilder.Register(&AwsAuthMap{}, &AwsAuthMapList{})
+	SchemeBuilder.Register(&AwsAuthMapSnippet{}, &AwsAuthMapSnippetList{})
 }

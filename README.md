@@ -32,9 +32,9 @@ To pick up on the example from the AWS documentation, that snippet would
 look like this in the CR:
 
     apiVersion: crd.awsauth.io/v1beta1
-    kind: AwsAuthMap
+    kind: AwsAuthMapSnippet
     metadata:
-      name: awsauthmap-sample
+      name: awsauthmapsnippet-sample
       namespace: sample-namespace
     spec:
       mapRoles:
@@ -56,17 +56,6 @@ look like this in the CR:
 When this resource is added to the cluster, the controller will modify the
 configmap to include the entries in this snippet. When it is removed, the
 respective entries will be removed, too.
-
-## Implementation details
-
-The controller adds an annotation to the configmap `awsauth.io/authversion`
-that holds an incrementing serial number to match the configmap to the
-custom resources in the cluster. The same value is stored in the CR's
-status so that out-of-sync resources can be identified.
-
-The controller calculates the SHA256 checksum of the snippet's content
-(arns, usernames, groupnames) to detect changed snippets that need to be
-updated in the configmap. The checksum is also stored in the status.
 
 ## Controller deployment
 
@@ -93,10 +82,6 @@ It will use whatever kubectl context is currently active.
 ## TODOs
 
   * Semantic release versioning
-  * Clean up repository
-  * A validating webhook to
-    * check the ARN format
-    * check for duplicate ARNs
-    * check with AWS if ARN actually exists (?, needs IRSA)
+  * A validating webhook to check with AWS if ARN actually exists (?, needs IRSA)
   * Add `mapAccounts` if anybody needs it
-  * Tests, automated
+  * More tests

@@ -1,7 +1,7 @@
 apiVersion: crd.awsauth.io/v1beta1
-kind: AwsAuthMap
+kind: AwsAuthMapSnippet
 metadata:
-  name: awsauthmap-sample
+  name: awsauthmapsnippet-sample
   namespace: sample-namespace
 spec:
   mapRoles:

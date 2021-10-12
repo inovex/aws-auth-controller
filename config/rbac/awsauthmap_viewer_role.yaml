@@ -1,13 +1,13 @@
-# permissions for end users to view awsauthmaps.
+# permissions for end users to view awsauthmapsnippets.
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
-  name: awsauthmap-viewer-role
+  name: awsauthmapsnippet-viewer-role
 rules:
 - apiGroups:
   - crd.awsauth.io
   resources:
-  - awsauthmaps
+  - awsauthmapsnippets
   verbs:
   - get
   - list
@@ -15,6 +15,6 @@ rules:
 - apiGroups:
   - crd.awsauth.io
   resources:
-  - awsauthmaps/status
+  - awsauthmapsnippets/status
   verbs:
   - get

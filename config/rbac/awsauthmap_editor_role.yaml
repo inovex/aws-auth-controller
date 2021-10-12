@@ -1,13 +1,13 @@
-# permissions for end users to edit awsauthmaps.
+# permissions for end users to edit awsauthmapsnippets.
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
-  name: awsauthmap-editor-role
+  name: awsauthmapsnippet-editor-role
 rules:
 - apiGroups:
   - crd.awsauth.io
   resources:
-  - awsauthmaps
+  - awsauthmapsnippets
   verbs:
   - create
   - delete
@@ -19,6 +19,6 @@ rules:
 - apiGroups:
   - crd.awsauth.io
   resources:
-  - awsauthmaps/status
+  - awsauthmapsnippets/status
   verbs:
   - get
