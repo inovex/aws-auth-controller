@@ -81,7 +81,6 @@ It will use whatever kubectl context is currently active.
 
 ## TODOs
 
-  * Semantic release versioning
   * A validating webhook to check with AWS if ARN actually exists (?, needs IRSA)
   * Add `mapAccounts` if anybody needs it
   * More tests
