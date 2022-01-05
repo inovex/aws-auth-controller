@@ -1,0 +1,15 @@
+{
+  "branch": "release",
+  "plugins": [
+    "@semantic-release/commit-analyzer",
+    ["@semantic-release/release-notes-generator", {
+      "writerOpts": {
+        "headerPartial": "# {{version}}\nImage: `ghcr.io/inovex/aws-auth-controller:{{version}}`"
+      }
+    }],
+    ["@semantic-release/exec", {
+      "publishCmd": "make release version=${nextRelease.version}"
+    }],
+    "@semantic-release/github"
+  ]
+}
