@@ -52,6 +52,7 @@ type AwsAuthMapSnippetStatus struct {
 
 	RoleArns []string `json:"roleArns,omitempty"`
 	UserArns []string `json:"userArns,omitempty"`
+	IsSynced bool     `json:"isSynced,omitempty"`
 }
 
 //+kubebuilder:object:root=true

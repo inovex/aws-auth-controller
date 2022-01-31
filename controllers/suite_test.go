@@ -17,6 +17,8 @@ limitations under the License.
 package controllers
 
 import (
+	"context"
+	"errors"
 	"path/filepath"
 	"testing"
 
@@ -40,7 +42,7 @@ import (
 // http://onsi.github.io/ginkgo/ to learn more about Ginkgo.
 
 var cfg *rest.Config
-var k8sClient client.Client
+var k8sClient *FakeApiClient
 var testEnv *envtest.Environment
 
 func TestAPIs(t *testing.T) {
@@ -49,6 +51,20 @@ func TestAPIs(t *testing.T) {
 	RunSpecsWithDefaultAndCustomReporters(t,
 		"Controller Suite",
 		[]Reporter{printer.NewlineReporter{}})
+}
+
+type FakeApiClient struct {
+	client.Client
+
+	FailUpdateName string
+}
+
+func (f *FakeApiClient) Update(ctx context.Context, obj client.Object, opts ...client.UpdateOption) error {
+	if obj.GetName() == f.FailUpdateName {
+		return errors.New("Conflict")
+	}
+
+	return f.Client.Update(ctx, obj, opts...)
 }
 
 var _ = BeforeSuite(func() {
@@ -69,9 +85,12 @@ var _ = BeforeSuite(func() {
 
 	//+kubebuilder:scaffold:scheme
 
-	k8sClient, err = client.New(cfg, client.Options{Scheme: scheme.Scheme})
+	realClient, err := client.New(cfg, client.Options{Scheme: scheme.Scheme})
 	Expect(err).NotTo(HaveOccurred())
-	Expect(k8sClient).NotTo(BeNil())
+	Expect(realClient).NotTo(BeNil())
+
+	k8sClient = &FakeApiClient{}
+	k8sClient.Client = realClient
 
 	k8sManager, err := ctrl.NewManager(cfg, ctrl.Options{
 		Scheme: scheme.Scheme,

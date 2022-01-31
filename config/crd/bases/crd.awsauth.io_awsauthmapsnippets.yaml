@@ -93,6 +93,8 @@ spec:
           status:
             description: AwsAuthMapSnippetStatus defines the observed state of AwsAuthMapSnippet.
             properties:
+              isSynced:
+                type: boolean
               roleArns:
                 items:
                   type: string

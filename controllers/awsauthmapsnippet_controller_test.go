@@ -14,7 +14,6 @@ import (
 )
 
 var _ = Describe("snippet controller", func() {
-
 	It("should update status", func() {
 		const USER_ARN = "arn:aws:iam::123456789012:user/foobar"
 		snip := &crdv1beta1.AwsAuthMapSnippet{
@@ -31,6 +30,7 @@ var _ = Describe("snippet controller", func() {
 					},
 				},
 			},
+			Status: crdv1beta1.AwsAuthMapSnippetStatus{IsSynced: false},
 		}
 		err := k8sClient.Create(context.Background(), snip)
 		Expect(err).ToNot(HaveOccurred())
@@ -44,6 +44,9 @@ var _ = Describe("snippet controller", func() {
 			if err != nil {
 				return false
 			}
+			if !snip.Status.IsSynced {
+				return false
+			}
 			if len(snip.Status.UserArns) != 1 {
 				return false
 			}
@@ -51,7 +54,8 @@ var _ = Describe("snippet controller", func() {
 		}, time.Second*10, time.Second).Should(BeTrue())
 
 	})
-	It("should create the ConfigMap", func() {
+
+	It("should set isSync to false on failure", func() {
 		const USER_ARN = "arn:aws:iam::123456789012:user/foobar"
 		snip := &crdv1beta1.AwsAuthMapSnippet{
 			ObjectMeta: v1.ObjectMeta{
@@ -67,6 +71,46 @@ var _ = Describe("snippet controller", func() {
 					},
 				},
 			},
+			Status: crdv1beta1.AwsAuthMapSnippetStatus{IsSynced: false},
+		}
+		k8sClient.FailUpdateName = "aws-auth"
+		defer func() {
+			k8sClient.FailUpdateName = ""
+		}()
+
+		err := k8sClient.Create(context.Background(), snip)
+		Expect(err).ToNot(HaveOccurred())
+
+		Consistently(func() bool {
+			// check if status exists
+			err = k8sClient.Get(context.Background(), types.NamespacedName{
+				Name:      snip.Name,
+				Namespace: snip.Namespace,
+			}, snip)
+			if err != nil {
+				return true
+			}
+			return snip.Status.IsSynced
+		}, time.Second*10, time.Second).Should(BeFalse())
+
+	})
+	It("should create the ConfigMap", func() {
+		const USER_ARN = "arn:aws:iam::123456789012:user/foobar"
+		snip := &crdv1beta1.AwsAuthMapSnippet{
+			ObjectMeta: v1.ObjectMeta{
+				Name:      "testsnip3",
+				Namespace: "default",
+			},
+			Spec: crdv1beta1.AwsAuthMapSnippetSpec{
+				MapUsers: []crdv1beta1.MapUsersSpec{
+					{
+						UserArn:  USER_ARN,
+						UserName: "foobar-name",
+						Groups:   []string{"foobar-group"},
+					},
+				},
+			},
+			Status: crdv1beta1.AwsAuthMapSnippetStatus{IsSynced: false},
 		}
 		err := k8sClient.Create(context.Background(), snip)
 		Expect(err).ToNot(HaveOccurred())

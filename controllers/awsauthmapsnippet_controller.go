@@ -98,18 +98,25 @@ func (r *AwsAuthMapSnippetReconciler) Reconcile(ctx context.Context, req ctrl.Re
 		return ctrl.Result{}, nil
 	}
 
+	// Prepare patch, remember original resource content
+	original := snippet.DeepCopy()
+	defer func() {
+		if err := r.UpdateSnippetStatus(ctx, snippet, original); err != nil {
+			logger.Error(err, "Failed to update status")
+		}
+	}()
+
+	snippet.Status.IsSynced = false
+
 	logger.Info("Updating ConfigMap")
 	if err := r.UpdateConfigMap(ctx, snippet, awsauthmap); err != nil {
 		logger.Error(err, "Failed to update ConfigMap")
 		return ctrl.Result{}, err
 	}
 
-	if err := r.UpdateSnippetStatus(ctx, snippet); err != nil {
-		logger.Error(err, "Failed to update status")
-		return ctrl.Result{}, err
-	}
-
 	logger.Info("Reconciliation completed")
+	snippet.Status.IsSynced = true
+
 	return ctrl.Result{}, nil
 }
 
@@ -117,18 +124,19 @@ func (r *AwsAuthMapSnippetReconciler) Reconcile(ctx context.Context, req ctrl.Re
 UpdateSnippetStatus stores the ARNS that are being managed in the status
 sub-object und updates the status.
 */
-func (r *AwsAuthMapSnippetReconciler) UpdateSnippetStatus(ctx context.Context, snippet *crdv1beta1.AwsAuthMapSnippet) error {
+func (r *AwsAuthMapSnippetReconciler) UpdateSnippetStatus(ctx context.Context, current, original *crdv1beta1.AwsAuthMapSnippet) error {
 
-	snippet.Status.RoleArns = []string{}
-	snippet.Status.UserArns = []string{}
+	// Overwrite lists with current
+	current.Status.RoleArns = []string{}
+	current.Status.UserArns = []string{}
 
-	for _, mr := range snippet.Spec.MapRoles {
-		snippet.Status.RoleArns = append(snippet.Status.RoleArns, mr.RoleArn)
+	for _, mr := range current.Spec.MapRoles {
+		current.Status.RoleArns = append(current.Status.RoleArns, mr.RoleArn)
 	}
-	for _, mu := range snippet.Spec.MapUsers {
-		snippet.Status.UserArns = append(snippet.Status.UserArns, mu.UserArn)
+	for _, mu := range current.Spec.MapUsers {
+		current.Status.UserArns = append(current.Status.UserArns, mu.UserArn)
 	}
-	return r.Status().Update(ctx, snippet)
+	return r.Status().Patch(ctx, current, client.MergeFrom(original))
 }
 
 /*
