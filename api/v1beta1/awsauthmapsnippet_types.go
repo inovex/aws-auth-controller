@@ -57,7 +57,7 @@ type AwsAuthMapSnippetStatus struct {
 
 //+kubebuilder:object:root=true
 //+kubebuilder:subresource:status
-//+kubebuilder:printcolumn:name="MapVersion",type=integer,JSONPath=`.status.mapVersion`
+//+kubebuilder:printcolumn:name="Synced",type=boolean,JSONPath=`.status.isSynced`
 
 // AwsAuthMapSnippet is the Schema for the awsauthmapsnippets API
 type AwsAuthMapSnippet struct {

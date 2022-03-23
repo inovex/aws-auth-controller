@@ -17,9 +17,9 @@ spec:
   scope: Namespaced
   versions:
   - additionalPrinterColumns:
-    - jsonPath: .status.mapVersion
-      name: MapVersion
-      type: integer
+    - jsonPath: .status.isSynced
+      name: Synced
+      type: boolean
     name: v1beta1
     schema:
       openAPIV3Schema:
