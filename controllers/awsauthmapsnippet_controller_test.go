@@ -5,10 +5,10 @@ import (
 	"time"
 
 	crdv1beta1 "github.com/inovex/aws-auth-controller/api/v1beta1"
-	. "github.com/onsi/ginkgo"
+	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
 	corev1 "k8s.io/api/core/v1"
-	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/types"
 	"sigs.k8s.io/yaml"
 )
@@ -17,7 +17,7 @@ var _ = Describe("snippet controller", func() {
 	It("should update status", func() {
 		const USER_ARN = "arn:aws:iam::123456789012:user/foobar"
 		snip := &crdv1beta1.AwsAuthMapSnippet{
-			ObjectMeta: v1.ObjectMeta{
+			ObjectMeta: metav1.ObjectMeta{
 				Name:      "testsnip",
 				Namespace: "default",
 			},
@@ -58,7 +58,7 @@ var _ = Describe("snippet controller", func() {
 	It("should set isSync to false on failure", func() {
 		const USER_ARN = "arn:aws:iam::123456789012:user/foobar"
 		snip := &crdv1beta1.AwsAuthMapSnippet{
-			ObjectMeta: v1.ObjectMeta{
+			ObjectMeta: metav1.ObjectMeta{
 				Name:      "testsnip2",
 				Namespace: "default",
 			},
@@ -94,10 +94,11 @@ var _ = Describe("snippet controller", func() {
 		}, time.Second*10, time.Second).Should(BeFalse())
 
 	})
+
 	It("should create the ConfigMap", func() {
 		const USER_ARN = "arn:aws:iam::123456789012:user/foobar"
 		snip := &crdv1beta1.AwsAuthMapSnippet{
-			ObjectMeta: v1.ObjectMeta{
+			ObjectMeta: metav1.ObjectMeta{
 				Name:      "testsnip3",
 				Namespace: "default",
 			},

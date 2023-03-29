@@ -15,8 +15,8 @@ limitations under the License.
 */
 
 // Package v1beta1 contains API Schema definitions for the aws-auth v1beta1 API group
-//+kubebuilder:object:generate=true
-//+groupName=crd.awsauth.io
+// +kubebuilder:object:generate=true
+// +groupName=crd.awsauth.io
 package v1beta1
 
 import (
