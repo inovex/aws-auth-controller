@@ -96,6 +96,10 @@ docker-buildx: test ## Build and push docker image for the manager for cross-pla
 	- docker buildx rm project-v3-builder
 	rm Dockerfile.cross
 
+##@ Release
+
+release: docker-build docker-push
+
 ##@ Deployment
 
 ifndef ignore-not-found
