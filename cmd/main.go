@@ -31,8 +31,8 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/healthz"
 	"sigs.k8s.io/controller-runtime/pkg/log/zap"
 
-	crdv1beta1 "github.com/inovex/aws-auth-controller/api/v1beta1"
-	"github.com/inovex/aws-auth-controller/controllers"
+	crdv1beta1 "github.com/inovex/aws-auth-controller/pkg/api/v1beta1"
+	"github.com/inovex/aws-auth-controller/pkg/controllers"
 	//+kubebuilder:scaffold:imports
 )
 
