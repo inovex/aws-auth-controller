@@ -4,7 +4,7 @@ on:
   push:
     branches:
       - main
-      ignore_tags:
+    ignore_tags:
       - "*"
 
 env:
