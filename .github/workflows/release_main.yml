@@ -1,33 +1,17 @@
-name: Test and Release
+name: Release Main Branch
 
 on:
   push:
     branches:
       - main
-  pull_request:
-    branches:
-      - main
+      ignore_tags:
+      - "*"
 
 env:
-  GO_VERSION: '1.20'
   REGISTRY: ghcr.io
   IMAGE: ghcr.io/${{ github.repository }}
 
 jobs:
-  run-tests:
-    runs-on: ubuntu-latest
-
-    steps:
-    - name: checkout
-      uses: actions/checkout@v3
-
-    - name: install go
-      uses: actions/setup-go@v3
-      with:
-        go-version: ${{ env.GO_VERSION }}
-
-    - name: run tests
-      run: make test
 
   build-and-release:
     runs-on: ubuntu-latest
@@ -36,15 +20,11 @@ jobs:
       contents: write
       packages: write
 
-    needs:
-      - run-tests
-
-    if: github.ref == 'refs/heads/main'
     steps:
       - name: setup node
         uses: actions/setup-node@v3
         with:
-          node-version: 16
+          node-version: 18
 
       - name: setup release tools
         run: npm install -g semantic-release@21 @semantic-release/exec
