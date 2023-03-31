@@ -27,12 +27,21 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/log"
 
 	crdv1beta1 "github.com/inovex/aws-auth-controller/pkg/api/v1beta1"
+	"github.com/inovex/aws-auth-controller/pkg/predicates"
 )
+
+// AwsAuthMapSnippetReconcilerOptions holds options for
+// AwsAuthMapSnippetReconciler
+type AwsAuthMapSnippetReconcilerOptions struct {
+	Namespaces []string
+}
 
 // AwsAuthMapSnippetReconciler reconciles an AwsAuthMapSnippet object
 type AwsAuthMapSnippetReconciler struct {
 	client.Client
 	Scheme *runtime.Scheme
+
+	Options AwsAuthMapSnippetReconcilerOptions
 }
 
 const FINALIZER_NAME = "awsauth.io/finalizer"
@@ -218,6 +227,7 @@ func (r *AwsAuthMapSnippetReconciler) CleanUpConfigMap(ctx context.Context, snip
 func (r *AwsAuthMapSnippetReconciler) SetupWithManager(mgr ctrl.Manager) error {
 	return ctrl.NewControllerManagedBy(mgr).
 		For(&crdv1beta1.AwsAuthMapSnippet{}).
+		WithEventFilter(predicates.NamespaceFilter(r.Options.Namespaces)).
 		Complete(r)
 }
 
