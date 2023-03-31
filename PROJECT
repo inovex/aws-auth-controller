@@ -10,6 +10,6 @@ resources:
   domain: awsauth.io
   group: crd
   kind: AwsAuthMapSnippet
-  path: github.com/inovex/aws-auth-controller/api/v1beta1
+  path: github.com/inovex/aws-auth-controller/pkg/api/v1beta1
   version: v1beta1
 version: "3"

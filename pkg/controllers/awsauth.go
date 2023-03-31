@@ -3,7 +3,7 @@ package controllers
 import (
 	"context"
 
-	crdv1beta1 "github.com/inovex/aws-auth-controller/api/v1beta1"
+	crdv1beta1 "github.com/inovex/aws-auth-controller/pkg/api/v1beta1"
 	corev1 "k8s.io/api/core/v1"
 	apierrs "k8s.io/apimachinery/pkg/api/errors"
 	"sigs.k8s.io/controller-runtime/pkg/client"

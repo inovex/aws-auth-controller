@@ -26,7 +26,7 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/controller/controllerutil"
 	"sigs.k8s.io/controller-runtime/pkg/log"
 
-	crdv1beta1 "github.com/inovex/aws-auth-controller/api/v1beta1"
+	crdv1beta1 "github.com/inovex/aws-auth-controller/pkg/api/v1beta1"
 )
 
 // AwsAuthMapSnippetReconciler reconciles an AwsAuthMapSnippet object

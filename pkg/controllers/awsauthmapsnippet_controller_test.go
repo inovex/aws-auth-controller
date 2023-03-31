@@ -4,7 +4,7 @@ import (
 	"context"
 	"time"
 
-	crdv1beta1 "github.com/inovex/aws-auth-controller/api/v1beta1"
+	crdv1beta1 "github.com/inovex/aws-auth-controller/pkg/api/v1beta1"
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
 	corev1 "k8s.io/api/core/v1"
