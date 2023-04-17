@@ -1,0 +1,54 @@
+name: Run tests and push image
+
+on:
+  pull_request:
+    branches:
+      - main
+
+env:
+  GO_VERSION: '1.20'
+  REGISTRY: ghcr.io
+  IMAGE: ghcr.io/${{ github.repository }}
+
+jobs:
+  run-tests:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: checkout
+      uses: actions/checkout@v3
+
+    - name: install go
+      uses: actions/setup-go@v3
+      with:
+        go-version: ${{ env.GO_VERSION }}
+
+    - name: run tests
+      run: make test
+
+  push-image:
+    runs-on: ubuntu-latest
+    needs: run-tests
+    permissions:
+      packages: write
+
+    steps:
+      - name: Install make
+        run: sudo apt-get install -y make
+
+      - name: Log in to the Container registry
+        uses: docker/login-action@v2
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: build
+        run: make release
+        env:
+          IMAGE: ${{ env.IMAGE }}
+          version: pr-13
+          #version: ${{ github.ref_name }}
